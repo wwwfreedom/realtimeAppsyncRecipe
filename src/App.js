@@ -55,7 +55,7 @@ class App extends Component {
   }
 
   render() {
-    console.log("props", this.props)
+    const { name, ingredient, direction } = this.state
     return (
       <div className="App" style={style.container}>
         <header className="App-header">
@@ -68,25 +68,34 @@ class App extends Component {
           </div>
         ))}
         <input
+          value={name}
           placeholder="Recipe name"
           style={style.input}
           onChange={e => this.onChange("name", e.target.value)}
         />
 
         <input
+          value={ingredient}
           placeholder="ingredient name"
           style={style.input}
-          onChange={e => this.onChange("name", e.target.value)}
+          onChange={e => this.onChange("ingredient", e.target.value)}
         />
-        <button style={style.button}>add ingredient</button>
+        <button style={style.button} onClick={this.addIngredient}>
+          add ingredient
+        </button>
 
         <input
+          value={direction}
           placeholder="direction name"
           style={style.input}
-          onChange={e => this.onChange("name", e.target.value)}
+          onChange={e => this.onChange("direction", e.target.value)}
         />
-        <button style={style.button}>add direction</button>
-        <button style={style.button}>add recipe</button>
+        <button style={style.button} onClick={this.addDirection}>
+          add direction
+        </button>
+        <button style={style.button} onClick={this.addRecipe}>
+          add recipe
+        </button>
       </div>
     )
   }
@@ -127,10 +136,11 @@ export default compose(
   }),
   graphql(CreateRecipe, {
     props: props => ({
-      onAdd: recipe =>
-        props.mutate({
+      onAdd: recipe => {
+        return props.mutate({
           variables: recipe,
-        }),
+        })
+      },
     }),
   })
 )(App)

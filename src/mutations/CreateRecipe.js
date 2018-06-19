@@ -5,7 +5,7 @@ export default graphql`
     $id: ID!
     $name: String!
     $ingredients: [String]!
-    $directions: [String!]
+    $directions: [String]!
   ) {
     createRecipe(
       input: {
