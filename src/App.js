@@ -139,6 +139,16 @@ export default compose(
       onAdd: recipe => {
         return props.mutate({
           variables: recipe,
+          optimisticResponse: {
+            __typename: "Mutation",
+            createRecipe: { ...recipe, __typename: "Recipe" },
+          },
+          update: (proxy, { data: { createRecipe } }) => {
+            // current data return from ListRecipes query
+            const data = proxy.readQuery({ query: ListRecipes })
+            data.listRecipes.items.push(createRecipe) // push in new recipes
+            proxy.writeQuery({ query: ListRecipes, data }) // update the new recipe
+          },
         })
       },
     }),
