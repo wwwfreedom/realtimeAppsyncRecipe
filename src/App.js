@@ -4,6 +4,7 @@ import "./App.css"
 import { compose, graphql } from "react-apollo"
 import ListRecipes from "./queries/ListRecipes.js"
 import CreateRecipe from "./mutations/CreateRecipe.js"
+import NewRecipeSubscription from './subscriptions/NewRecipeSubscription.js'
 import uuidV4 from "uuid/v4"
 
 class App extends Component {
@@ -13,6 +14,9 @@ class App extends Component {
     direction: "",
     ingredients: [],
     directions: [],
+  }
+  componentDidMount() {
+    this.props.subscribeToNewRecipes()
   }
 
   onChange = (key, value) => {
@@ -131,6 +135,16 @@ export default compose(
     props: props => {
       return {
         recipes: props.data.listRecipes ? props.data.listRecipes.items : [],
+        subscribeToNewRecipes: (params) => props.data.subscribeToMore({
+          document: NewRecipeSubscription,
+          updateQuery: (prev, {subscriptionData: { data: { onCreateRecipe }} }) => ({
+            ...prev,
+            listRecipes: {
+              __typename: 'RecipeConnection',
+              items: [onCreateRecipe, ...prev.listRecipes.items.filter(recipe => recipe.id !== onCreateRecipe.id)]
+            }
+          })
+        })
       }
     },
   }),
